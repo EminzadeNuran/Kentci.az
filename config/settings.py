@@ -130,3 +130,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'kentci.User'
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'kentci_db',         
+        'USER': 'kentci_user',       
+        'PASSWORD': 'nuran1234',  
+        'HOST': 'localhost',         
+        'PORT': '5432',              
+    }
+}

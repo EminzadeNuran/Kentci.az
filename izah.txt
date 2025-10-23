@@ -1,0 +1,109 @@
+BaseModel və Soft Delete
+
+Bütün modellərin ortaq xüsusiyyətlərini saxlayır: yaradılma tarixi, yenilənmə tarixi, kimin yaratdığı və yeniləyişi, is_deleted flag.
+
+Soft delete sistemi: delete() çağıranda əslində məlumat silinmir, yalnız is_deleted=True edilir.
+
+Default sorğular (objects) yalnız aktiv qeydləri göstərir, all_objects isə bütün qeydləri.
+
+User Model
+
+Sistemdə istifadəçi hesabını təmsil edir.
+
+Sahələr: email (login üçün), username, rol (Admin, Moderator, Customer), telefon, profil şəkli, bio, təsdiq statusu (is_verified) və sadiqlik xalları (loyalty_points).
+
+Email login üçün istifadə olunur.
+
+Rol sistemi: istifadəçinin paneldə və funksiyalarda hansı icazəyə malik olduğunu təyin edir.
+
+Admin Audit Log
+
+Admin və ya superuser tərəfindən edilən dəyişiklikləri qeyd edir.
+
+Saxladığı məlumatlar: istifadəçi, hansı modeldə dəyişiklik edilib, obyekt ID, dəyişikliklərin detalları (JSON) və tarix.
+
+Bu loglar auditoriya və təhlükəsizlik üçün vacibdir.
+
+Category (Çoxdilli)
+
+Məhsul kateqoriyalarını təmsil edir.
+
+name və description JSON sahələrində saxlanılır, bu da müxtəlif dillərdə saxlamağa imkan verir.
+
+Məsələn, {"en":"Electronics","az":"Elektronika","ru":"Электроника"}.
+
+Product Model (Məhsul)
+
+Məhsulun əsas məlumatlarını saxlayır: adı, təsviri (multi-language), qiymət, miqdar, aktiv status, şəkillər, videolar, tag-lar, valyuta.
+
+rating_average və review_count review-lərə əsaslanır.
+
+stock_status və is_available property-ləri məhsulun mövcudluğunu göstərir.
+
+Videoların əlavə olunması üçün sahə var (videos).
+
+Product Stock History
+
+Məhsulun inventar hərəkətlərini izləyir: hər stok artımı və ya azalma burada qeyd olunur.
+
+Hər hərəkətin səbəbi və kimin tərəfindən edildiyi saxlanılır.
+
+Coupon Model (Çoxdilli)
+
+Endirim kuponlarını təmsil edir.
+
+code, faiz endirimi, aktivlik statusu, vaxt aralığı və adı (multi-language).
+
+apply_discount() funksiyası sifarişin ümumi məbləğinə endirim tətbiq edir.
+
+Wishlist & Back-in-stock Alert
+
+İstifadəçinin məhsulları izləməsinə imkan verir.
+
+notify_when_available flag-i aktivdirsə, məhsul stokda olarsa istifadəçiyə bildiriş göndərilə bilər.
+
+Order və OrderItem
+
+Order: istifadəçinin sifarişi, statusu (Pending, Completed, Cancelled), kupon, çatdırılma tarixi və göndərmə haqqı.
+
+OrderItem: sifarişi təşkil edən məhsullar, miqdarı və qiyməti.
+
+total_price property-si ümumi məbləği hesablayır və coupon varsa endirim tətbiq edir.
+
+CartItem
+
+İstifadəçinin səbətindəki məhsulları saxlayır.
+
+Miqdar məhsulun mövcud miqdarı ilə məhdudlaşdırılır (is_available).
+
+subtotal hesablanır: məhsulun qiyməti × miqdar.
+
+Review
+
+İstifadəçilər məhsulu qiymətləndirə və şərh yaza bilər.
+
+approved sahəsi admin təsdiqi üçün, helpful_count istifadəçilərin faydalı tapdığı rəyləri saxlayır.
+
+Review əlavə olunanda məhsulun ortalama qiyməti (rating_average) və review sayı (review_count) avtomatik yenilənir.
+
+Payment və Webhook
+
+Ödənişləri təmsil edir: məbləğ, valyuta, ödəniş metodu (cash, card, online), status (Pending, Completed, Failed), transaction id, receipt URL.
+
+webhook_payload və webhook_status üçüncü tərəf ödəniş sistemi inteqrasiyası və real-time notification üçün.
+
+WebhookLog hər bir webhook çağırışını və cavabını qeyd edir.
+
+Signals
+
+Review post_save: Review əlavə olunanda Product reytinqini yeniləyir.
+
+Payment post_save: Ödəniş tamamlananda sifariş statusunu Completed edir.
+
+
+
+
+qeyd:
+
+
+datalar PostegroSql dedi db.sqlite3  islemir
