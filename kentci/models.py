@@ -5,14 +5,13 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 from django.utils import timezone
 from django.urls import reverse
 from django.utils.text import slugify
-# from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db.models import JSONField
 from django.contrib.postgres.fields import ArrayField
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # -------------------------
-# BaseModel və SoftDelete Manager
+# Base Model və Soft Delete
 # -------------------------
 class BaseModelManager(models.Manager):
     def get_queryset(self):
@@ -80,7 +79,7 @@ class AdminAuditLog(models.Model):
         ordering = ['-created_at']
 
 # -------------------------
-# Category Model with multi-language
+# Category Model (Multi-language)
 # -------------------------
 class Category(BaseModel):
     name = models.JSONField(default=dict)
@@ -95,7 +94,7 @@ class Category(BaseModel):
         ordering = ['created_at']
 
 # -------------------------
-# Product Model with video, multi-language
+# Product Model
 # -------------------------
 class Product(BaseModel):
     name = models.JSONField(default=dict)
@@ -141,7 +140,7 @@ class Product(BaseModel):
         ordering = ['created_at']
 
 # -------------------------
-# Product Inventory History / Stock Movement
+# Product Stock History
 # -------------------------
 class ProductStockHistory(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_history')
@@ -156,7 +155,7 @@ class ProductStockHistory(models.Model):
         ordering = ['-created_at']
 
 # -------------------------
-# Coupon Model with multi-language
+# Coupon Model
 # -------------------------
 class Coupon(BaseModel):
     code = models.CharField(max_length=20, unique=True)
@@ -184,7 +183,7 @@ class Coupon(BaseModel):
         ordering = ['-valid_from']
 
 # -------------------------
-# Wishlist Notification / Back-in-stock alert
+# Wishlist
 # -------------------------
 class WishlistItem(BaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist')
@@ -239,7 +238,7 @@ class Order(BaseModel):
         ordering = ['-created_at']
 
 # -------------------------
-# OrderItem Model
+# Order Item
 # -------------------------
 class OrderItem(BaseModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -260,7 +259,7 @@ class OrderItem(BaseModel):
         ordering = ['id']
 
 # -------------------------
-# CartItem Model
+# Cart Item
 # -------------------------
 class CartItem(BaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cart_items')
@@ -289,7 +288,7 @@ class CartItem(BaseModel):
         verbose_name_plural = "Cart Items"
 
 # -------------------------
-# Review Model
+# Review
 # -------------------------
 class Review(BaseModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
@@ -309,7 +308,7 @@ class Review(BaseModel):
         return f"{self.user.username} - {self.product.name.get('en','Product')} ({self.rating})"
 
 # -------------------------
-# Payment Model with webhook
+# Payment Model
 # -------------------------
 class Payment(BaseModel):
     class PaymentMethod(models.TextChoices):
@@ -342,7 +341,7 @@ class Payment(BaseModel):
         ordering = ['-paid_at']
 
 # -------------------------
-# Webhook log
+# Webhook Log
 # -------------------------
 class WebhookLog(models.Model):
     url = models.URLField()
